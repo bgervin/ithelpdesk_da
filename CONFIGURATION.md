@@ -28,15 +28,15 @@ File: `appPackage/servicenow-openapi.json`
 #### Configure Authentication
 File: `appPackage/serviceNowPlugin.json`
 
-The default configuration uses no authentication (for testing). For production:
+The default configuration uses no authentication in the plugin manifest (authentication handled at network/proxy level):
 
-**Option 1: Basic Authentication (Simple but less secure)**
+**Option 1: No Authentication in Plugin (Default)**
 ```json
 "auth": {
   "type": "none"
 }
 ```
-Note: With "none", authentication will be handled at the network level or through the manifest.
+Note: With "none", authentication should be handled at the network level, API gateway, or through Microsoft's authentication proxy.
 
 **Option 2: OAuth 2.0 (Recommended for Production)**
 ```json
@@ -218,7 +218,20 @@ curl -X GET "https://YOUR-INSTANCE.service-now.com/api/now/table/incident?syspar
   -u "username:password"
 ```
 
-Expected response: JSON with incident data
+**Expected response**: HTTP 200 OK with JSON data:
+```json
+{
+  "result": [
+    {
+      "sys_id": "abc123...",
+      "number": "INC0010001",
+      "short_description": "User cannot access email",
+      "state": "1",
+      "priority": "3"
+    }
+  ]
+}
+```
 
 ### Optional ServiceNow Customizations
 

@@ -52,7 +52,7 @@ OUTPUT_FILE="ithelpdesk-agent.zip"
 echo "Creating package: $OUTPUT_FILE"
 
 cd "$TEMP_DIR"
-zip -q -r "$OUTPUT_FILE" ./*
+zip -q "$OUTPUT_FILE" *.json *.md *.png 2>/dev/null || zip -q "$OUTPUT_FILE" *.json *.md
 
 # Move the package to the original directory
 mv "$OUTPUT_FILE" "$OLDPWD/"

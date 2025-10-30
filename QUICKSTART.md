@@ -32,7 +32,20 @@ curl -X GET "https://YOUR-INSTANCE.service-now.com/api/now/table/incident?syspar
   -u "username:password"
 ```
 
-If you get JSON data back, you're good to go! ✓
+**Expected response**: HTTP 200 with JSON data like:
+```json
+{
+  "result": [
+    {
+      "number": "INC0010001",
+      "short_description": "...",
+      "state": "New"
+    }
+  ]
+}
+```
+
+If you get this response, you're good to go! ✓
 
 ## Step 2: Set Up Knowledge Base (3 minutes)
 
