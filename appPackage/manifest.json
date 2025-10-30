@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "id": "ithelpdesk-da-agent-001",
+  "version": "1.0.0",
+  "developer": {
+    "name": "IT HelpDesk Team",
+    "websiteUrl": "https://www.example.com",
+    "privacyUrl": "https://www.example.com/privacy",
+    "termsOfUseUrl": "https://www.example.com/terms"
+  },
+  "name": {
+    "short": "IT HelpDesk Agent",
+    "full": "IT HelpDesk Copilot Agent for ServiceNow"
+  },
+  "description": {
+    "short": "Get IT support and manage ServiceNow tickets",
+    "full": "An intelligent IT HelpDesk assistant that helps you find answers to common IT questions and create or modify ServiceNow tickets for IT support requests."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#FFFFFF",
+  "copilotAgents": {
+    "declarativeAgents": [
+      {
+        "id": "ithelpdesk-declarative-agent",
+        "file": "declarativeAgent.json"
+      }
+    ]
+  },
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": []
+}
