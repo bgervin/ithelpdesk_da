@@ -1,0 +1,105 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.3/schema.json",
+  "schema_version": "v2.3",
+  "name_for_human": "ServiceNow Incident Management",
+  "name_for_model": "servicenow_api",
+  "description_for_human": "Manage ServiceNow incidents - create, view, update, and close IT support tickets.",
+  "description_for_model": "Plugin for managing ServiceNow incidents. Allows creating new incident tickets, retrieving user's incidents, updating incident details, and closing resolved incidents. Use this when users need to create IT support tickets, check ticket status, or manage their ServiceNow incidents.",
+  "api": {
+    "type": "openapi",
+    "url": "servicenow-openapi.json"
+  },
+  "auth": {
+    "type": "none"
+  },
+  "contact_email": "ithelpdesk@example.com",
+  "legal_info_url": "https://www.example.com/legal",
+  "privacy_policy_url": "https://www.example.com/privacy",
+  "functions": [
+    {
+      "name": "listIncidents",
+      "description": "Retrieves a list of ServiceNow incidents for the current user. Returns ticket number, status, description, priority, and other relevant details.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$.result",
+          "properties": {
+            "title": "$.number",
+            "subtitle": "$.short_description",
+            "url": "$.sys_id"
+          }
+        }
+      }
+    },
+    {
+      "name": "getIncident",
+      "description": "Retrieves detailed information about a specific ServiceNow incident by incident number or sys_id.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$.result",
+          "properties": {
+            "title": "$.number",
+            "subtitle": "$.short_description",
+            "url": "$.sys_id"
+          }
+        }
+      }
+    },
+    {
+      "name": "createIncident",
+      "description": "Creates a new ServiceNow incident ticket with the provided details including short description, full description, category, urgency, and impact.",
+      "capabilities": {
+        "confirmation": {
+          "type": "AdaptiveCard",
+          "title": "Create ServiceNow Ticket",
+          "body": "Do you want to create a ServiceNow incident with the following details?\n\n**Short Description**: {{short_description}}\n**Category**: {{category}}\n**Urgency**: {{urgency}}\n**Impact**: {{impact}}"
+        },
+        "response_semantics": {
+          "data_path": "$.result",
+          "properties": {
+            "title": "$.number",
+            "subtitle": "$.short_description",
+            "url": "$.sys_id"
+          }
+        }
+      }
+    },
+    {
+      "name": "updateIncident",
+      "description": "Updates an existing ServiceNow incident with new information such as work notes, state, or other field values.",
+      "capabilities": {
+        "confirmation": {
+          "type": "AdaptiveCard",
+          "title": "Update ServiceNow Ticket",
+          "body": "Do you want to update incident {{incident_number}} with the provided changes?"
+        },
+        "response_semantics": {
+          "data_path": "$.result",
+          "properties": {
+            "title": "$.number",
+            "subtitle": "$.short_description",
+            "url": "$.sys_id"
+          }
+        }
+      }
+    },
+    {
+      "name": "closeIncident",
+      "description": "Closes a ServiceNow incident by marking it as resolved. Requires the incident number and optional closure notes.",
+      "capabilities": {
+        "confirmation": {
+          "type": "AdaptiveCard",
+          "title": "Close ServiceNow Ticket",
+          "body": "Do you want to close incident {{incident_number}}?"
+        },
+        "response_semantics": {
+          "data_path": "$.result",
+          "properties": {
+            "title": "$.number",
+            "subtitle": "$.short_description",
+            "url": "$.sys_id"
+          }
+        }
+      }
+    }
+  ]
+}

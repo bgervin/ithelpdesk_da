@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/declarative-agent/v1.4/schema.json",
+  "version": "v1.4",
+  "name": "IT HelpDesk Agent",
+  "description": "An intelligent IT HelpDesk assistant that answers common IT questions and helps you create and manage ServiceNow tickets for IT support requests.",
+  "instructions": "instructions.md",
+  "conversation_starters": [
+    {
+      "title": "Reset my password",
+      "text": "How do I reset my password?"
+    },
+    {
+      "title": "Software access",
+      "text": "How do I request access to a software application?"
+    },
+    {
+      "title": "Create ticket",
+      "text": "Create a ServiceNow ticket for my laptop issue"
+    },
+    {
+      "title": "My tickets",
+      "text": "Show me my open ServiceNow tickets"
+    },
+    {
+      "title": "VPN issues",
+      "text": "I'm having trouble connecting to the VPN"
+    },
+    {
+      "title": "Printer setup",
+      "text": "How do I set up a network printer?"
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "OneDriveAndSharePoint",
+      "items_by_url": [
+        {
+          "url": "knowledge/it-helpdesk-faq.md"
+        }
+      ]
+    },
+    {
+      "name": "Actions",
+      "items_by_id": [
+        {
+          "id": "servicenow-api-plugin"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "servicenow-api-plugin",
+      "file": "serviceNowPlugin.json"
+    }
+  ]
+}

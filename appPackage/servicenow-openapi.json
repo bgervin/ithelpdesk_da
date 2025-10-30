@@ -1,0 +1,469 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ServiceNow Incident Management API",
+    "description": "API for managing ServiceNow incidents - create, retrieve, update, and close IT support tickets",
+    "version": "1.0.0",
+    "contact": {
+      "name": "IT HelpDesk Team",
+      "email": "ithelpdesk@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://your-instance.service-now.com/api/now",
+      "description": "ServiceNow Production Instance"
+    }
+  ],
+  "paths": {
+    "/table/incident": {
+      "get": {
+        "operationId": "listIncidents",
+        "summary": "List incidents for the current user",
+        "description": "Retrieves a list of ServiceNow incidents. By default, returns incidents for the current user.",
+        "parameters": [
+          {
+            "name": "sysparm_query",
+            "in": "query",
+            "description": "Encoded query string to filter results (e.g., caller_id=javascript:gs.getUserID()^active=true)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "caller_id=javascript:gs.getUserID()^active=true"
+            }
+          },
+          {
+            "name": "sysparm_limit",
+            "in": "query",
+            "description": "Maximum number of records to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "sysparm_fields",
+            "in": "query",
+            "description": "Comma-separated list of fields to return",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "number,short_description,state,priority,urgency,impact,category,assigned_to,sys_created_on,sys_updated_on,sys_id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with list of incidents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createIncident",
+        "summary": "Create a new incident",
+        "description": "Creates a new ServiceNow incident ticket with the provided information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncidentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Incident created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/table/incident/{sys_id}": {
+      "get": {
+        "operationId": "getIncident",
+        "summary": "Get incident by ID",
+        "description": "Retrieves detailed information about a specific incident",
+        "parameters": [
+          {
+            "name": "sys_id",
+            "in": "path",
+            "description": "System ID or incident number of the incident to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sysparm_fields",
+            "in": "query",
+            "description": "Comma-separated list of fields to return",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "number,short_description,description,state,priority,urgency,impact,category,assigned_to,caller_id,work_notes,close_notes,sys_created_on,sys_updated_on,sys_id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with incident details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incident not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateIncident",
+        "summary": "Update an existing incident",
+        "description": "Updates an existing ServiceNow incident with new information",
+        "parameters": [
+          {
+            "name": "sys_id",
+            "in": "path",
+            "description": "System ID of the incident to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIncidentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Incident updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data"
+          },
+          "404": {
+            "description": "Incident not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/table/incident/{sys_id}/close": {
+      "post": {
+        "operationId": "closeIncident",
+        "summary": "Close an incident",
+        "description": "Closes a ServiceNow incident by setting its state to resolved/closed",
+        "parameters": [
+          {
+            "name": "sys_id",
+            "in": "path",
+            "description": "System ID of the incident to close",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseIncidentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Incident closed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data"
+          },
+          "404": {
+            "description": "Incident not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IncidentList": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Incident"
+            }
+          }
+        }
+      },
+      "IncidentResponse": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/Incident"
+          }
+        }
+      },
+      "Incident": {
+        "type": "object",
+        "properties": {
+          "sys_id": {
+            "type": "string",
+            "description": "Unique system identifier"
+          },
+          "number": {
+            "type": "string",
+            "description": "Incident number (e.g., INC0010001)"
+          },
+          "short_description": {
+            "type": "string",
+            "description": "Brief description of the incident"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the incident"
+          },
+          "state": {
+            "type": "string",
+            "description": "Current state of the incident",
+            "enum": ["New", "In Progress", "On Hold", "Resolved", "Closed", "Canceled"]
+          },
+          "priority": {
+            "type": "string",
+            "description": "Priority level (1-5, where 1 is highest)"
+          },
+          "urgency": {
+            "type": "string",
+            "description": "Urgency level",
+            "enum": ["1 - High", "2 - Medium", "3 - Low"]
+          },
+          "impact": {
+            "type": "string",
+            "description": "Impact level",
+            "enum": ["1 - High", "2 - Medium", "3 - Low"]
+          },
+          "category": {
+            "type": "string",
+            "description": "Incident category"
+          },
+          "assigned_to": {
+            "type": "object",
+            "properties": {
+              "display_value": {
+                "type": "string"
+              },
+              "link": {
+                "type": "string"
+              }
+            }
+          },
+          "caller_id": {
+            "type": "object",
+            "properties": {
+              "display_value": {
+                "type": "string"
+              },
+              "link": {
+                "type": "string"
+              }
+            }
+          },
+          "work_notes": {
+            "type": "string",
+            "description": "Internal work notes"
+          },
+          "close_notes": {
+            "type": "string",
+            "description": "Resolution notes"
+          },
+          "sys_created_on": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the incident was created"
+          },
+          "sys_updated_on": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the incident was last updated"
+          }
+        }
+      },
+      "CreateIncidentRequest": {
+        "type": "object",
+        "required": ["short_description"],
+        "properties": {
+          "short_description": {
+            "type": "string",
+            "description": "Brief description of the incident (required)",
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the incident"
+          },
+          "category": {
+            "type": "string",
+            "description": "Incident category",
+            "enum": ["Hardware", "Software", "Network", "Database", "Inquiry / Help", "Access"]
+          },
+          "urgency": {
+            "type": "string",
+            "description": "Urgency level",
+            "enum": ["1", "2", "3"],
+            "default": "3"
+          },
+          "impact": {
+            "type": "string",
+            "description": "Impact level",
+            "enum": ["1", "2", "3"],
+            "default": "3"
+          },
+          "assignment_group": {
+            "type": "string",
+            "description": "Name or sys_id of the assignment group"
+          }
+        }
+      },
+      "UpdateIncidentRequest": {
+        "type": "object",
+        "properties": {
+          "short_description": {
+            "type": "string",
+            "description": "Updated brief description"
+          },
+          "description": {
+            "type": "string",
+            "description": "Updated detailed description"
+          },
+          "state": {
+            "type": "string",
+            "description": "Updated state"
+          },
+          "work_notes": {
+            "type": "string",
+            "description": "Additional work notes to add"
+          },
+          "priority": {
+            "type": "string",
+            "description": "Updated priority"
+          },
+          "urgency": {
+            "type": "string",
+            "description": "Updated urgency"
+          },
+          "impact": {
+            "type": "string",
+            "description": "Updated impact"
+          }
+        }
+      },
+      "CloseIncidentRequest": {
+        "type": "object",
+        "properties": {
+          "close_notes": {
+            "type": "string",
+            "description": "Resolution notes for closing the incident"
+          },
+          "close_code": {
+            "type": "string",
+            "description": "Closure code",
+            "enum": ["Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", "Closed/Resolved by Caller"]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://your-instance.service-now.com/oauth_auth.do",
+            "tokenUrl": "https://your-instance.service-now.com/oauth_token.do",
+            "scopes": {
+              "useraccount": "Access user account information"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "basicAuth": []
+    }
+  ]
+}
